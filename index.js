@@ -4,7 +4,7 @@ Joi.objectId  = require("joi-objectid")(Joi);
 const express = require("express");
 const app = express();
 
-require("./startup/logging")
+require("./startup/logging")();
 require("./startup/routes")(app);
 require("./startup/db.js")();
 require("./startup/config.js")();
