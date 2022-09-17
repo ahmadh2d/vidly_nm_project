@@ -8,6 +8,6 @@ module.exports = function () {
         .connect(db)
         .then(() => console.log(`Connected to ${db} DB...`))
         .catch((err) =>
-            console.log(`Failed to connect to '${db}' MongoDB...`, err.Message);
+            console.log(`Failed to connect to '${db}' MongoDB...`, err.Message)
         );
 };
