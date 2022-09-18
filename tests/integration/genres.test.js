@@ -1,14 +1,25 @@
-const { array } = require("joi");
+const { default: mongoose } = require("mongoose");
 const request = require("supertest");
 const { Genre } = require("../../models/genre");
 const { User } = require("../../models/user");
 let server;
 
 describe("/api/genres", () => {
-    beforeEach(() => (server = require("../../index")));
+    beforeEach(() => {
+        server = require("../../index");
+        // server.on('error', (e) => {
+        //     if (e.code === 'EADDRINUSE') {
+        //       console.log('Address in use, retrying...');
+        //       setTimeout(() => {
+        //         server.close();
+        //         server.listen(3000);
+        //       }, 1000);
+        //     }
+        //   });
+    });
     afterEach(async () => {
-        server.close();
         await Genre.deleteMany({});
+        server.close();
     });
 
     describe("GET /", () => {
@@ -35,12 +46,17 @@ describe("/api/genres", () => {
             const res = await request(server).get(`/api/genres/${genre._id}`);
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty("name", genre.name);
-            // expect(res.body.length).toBe(2);
-
         });
         
         it("should return a 404 error if genre is invalid", async () => {
             const res = await request(server).get(`/api/genres/1`);
+
+            expect(res.status).toBe(404);
+        });
+
+        it("should return a 404 error if genre is invalid", async () => {
+            const id = mongoose.Types.ObjectId();
+            const res = await request(server).get(`/api/genres/${id}`);
 
             expect(res.status).toBe(404);
         });

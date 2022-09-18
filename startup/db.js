@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 const config = require("config");
 
-module.exports = function () {
+module.exports = async function () {
     // MongoDB
     const db = config.get("db");
-    mongoose
+    await mongoose
         .connect(db)
         .then(() => console.log(`Connected to ${db} DB...`))
         .catch((err) =>
