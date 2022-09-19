@@ -1,23 +1,26 @@
 const Joi = require("joi");
-const { default: mongoose } = require("mongoose");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../startup/db_mysql");
 
-const Customer = mongoose.model("Customer", new mongoose.Schema({
+const Customer = sequelize.define("Customer", {
     name: {
-        type: String,
-        required: true,
-        minlength: 3,
-        maxLength: 255
+        type: DataTypes.STRING(255),
+        allowNull: false,
+        validate: {
+            len: [3, 255]
+        }
     },
     isGold: {
-        type: Boolean,
+        type: DataTypes.BOOLEAN,
     },
     phone: {
-        type: String,
-        minlength: 5,
-        maxLength: 20,
-        required: true
+        type: DataTypes.STRING(20),
+        allowNull: false,
+        validate: {
+            len: [5, 20]
+        }
     }
-}));
+});
 
 function validate(customer) {
     const validator = Joi.object({

@@ -2,9 +2,7 @@ const { User } = require("../models/user");
 const express = require("express");
 const Joi = require("joi");
 const bcrypt = require("bcrypt");
-const config = require("config");
 const router = express.Router();
-const jwt = require("jsonwebtoken");
 
 router.post("/", async (req, res) => {
     const { error } = validate(req.body);
@@ -12,7 +10,7 @@ router.post("/", async (req, res) => {
         return res.status(400).send(error.details.map(i => i.message).join(", "));
     }
 
-    const user = await User.findOne({ email: req.body.email })
+    const user = await User.findOne({ where: { email: req.body.email }});
     if (!user)
         return res.status(400).send("Invalid email or password");
 

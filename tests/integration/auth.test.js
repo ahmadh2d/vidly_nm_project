@@ -7,16 +7,6 @@ describe("auth middleware", () => {
     let token;
 
     beforeEach(() => {
-        server = require("../../index")
-        // server.on('error', (e) => {
-        //     if (e.code === 'EADDRINUSE') {
-        //       console.log('Address in use, retrying...');
-        //       setTimeout(() => {
-        //         server.close();
-        //         server.listen(3100);
-        //       }, 1000);
-        //     }
-        //   });
           
         const user = new User();
         token = user.generateAuthToken();

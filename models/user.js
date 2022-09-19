@@ -1,42 +1,49 @@
 const Joi = require("joi");
 const config = require("config");
 const jwt = require("jsonwebtoken");
-const { default: mongoose } = require("mongoose");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../startup/db_mysql");
 
-const userSchema = new mongoose.Schema({
+const userSchema = {
+    id: {
+        type: DataTypes.INTEGER(11),
+        primaryKey: true,
+        allowNull: false,
+        autoIncrement: true
+    },
     name: {
-        type: String,
-        required: true,
-        minlength: 5,
-        maxLength: 50,
-        trim: true
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        validate: {
+            len: [5, 50]
+        }
     },
     isAdmin: {
-        type: Boolean,
+        type: DataTypes.BOOLEAN,
     },
     email: {
-        type: String,
-        required: true,
-        minlength: 8,
-        maxLength: 255,
-        trim: true,
-        unique: true
+        type: DataTypes.STRING(255),
+        allowNull: false,
+        unique: true,
+        validate: {
+            len: [8, 255],
+        }
     },
     password: {
-        type: String,
-        required: true,
-        minlength: 6,
-        maxLength: 1024,
-        trim: true
+        type: DataTypes.STRING(1024),
+        allowNull: false,
+        validate: {
+            len: [6, 1024],
+        }
     },
-});
+};
 
-userSchema.methods.generateAuthToken = function () {
-    return jwt.sign({ _id: this._id, isAdmin: this.isAdmin }, config.get("jwtPrivateKey"))
+
+const User = sequelize.define("User", userSchema);
+
+User.prototype.generateAuthToken = function () {
+    return jwt.sign({ id: this.id, isAdmin: this.isAdmin }, config.get("jwtPrivateKey"))
 }
-
-const User = mongoose.model("User", userSchema);
-
 
 function validate(user) {
     const validator = Joi.object({

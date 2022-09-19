@@ -1,11 +1,10 @@
 const { validate, Genre } = require("../models/genre");
 const auth = require("../middleware/auth");
 const isAdmin = require("../middleware/admin");
-// const asyncMiddleware = require("../middleware/async")
-const validatingObjectId = require("../middleware/validatingObjectId");
 const express = require("express");
-const { default: mongoose } = require("mongoose");
 const router = express.Router();
+// const asyncMiddleware = require("../middleware/async")
+// const validatingObjectId = require("../middleware/validatingObjectId");
 
 /*
 router.get("/", asyncMiddleware(async (req, res, next) => {
@@ -16,13 +15,13 @@ router.get("/", asyncMiddleware(async (req, res, next) => {
 */
 
 router.get("/", async (req, res, next) => {
-    const genres = await Genre.find().sort({ name: 1 });
+    const genres = await Genre.findAll({order: [['name', 'ASC']]});
 
     res.send(genres);
 });
 
-router.get("/:id", validatingObjectId, async (req, res) => {
-    const genre = await Genre.findById(req.params.id);
+router.get("/:id", async (req, res) => {
+    const genre = await Genre.findByPk(req.params.id);
 
     if (!genre) {
         return res
@@ -39,16 +38,13 @@ router.post("/", auth, async (req, res) => {
         return res.status(400).send(error.details[0].message);
     }
 
-    const genre = new Genre({
-        name: req.body.name,
-    });
-
+    let genre;
     try {
-        await genre.validate();
-
-        const result = await genre.save();
-    } catch (ex) {
-        return res.status(400).send("Failed to add Genre", ex);
+        genre = await Genre.create({
+            name: req.body.name,
+        });
+    } catch (error) {
+        return res.status(400).send("Failed to add Genre", error);
     }
 
     res.status(200).send(genre);
@@ -59,13 +55,13 @@ router.put("/:id", async (req, res) => {
     if (error) {
         return res.status(400).send(error.details[0].message);
     }
-
-    const genre = await Genre.findByIdAndUpdate(
-        req.params.id,
+    const [ genre ] = await Genre.update(
         {
-            name: req.body.name,
+            name: req.body.name
         },
-        { new: true }
+        {
+            where: { id: req.params.id }
+        },
     );
 
     if (!genre) {
@@ -74,17 +70,19 @@ router.put("/:id", async (req, res) => {
             .send(`Failed! Genre with Id=${req.params.id} not found`);
     }
 
-    res.status(200).send(genre);
+    res.status(200).send(genre + " row updated successfully");
 });
 
 router.delete("/:id", [auth, isAdmin], async (req, res) => {
-    const genre = await Genre.findByIdAndRemove(req.params.id, { new: true });
+    const genre = await Genre.findByPk(req.params.id);
 
     if (!genre) {
         return res
             .status(404)
             .send(`Failed! Genre with Id=${req.params.id} not found`);
     }
+
+    await genre.destroy();
 
     res.status(200).send(genre);
 });

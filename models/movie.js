@@ -1,37 +1,44 @@
 const Joi = require("joi");
-const { default: mongoose } = require("mongoose");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../startup/db_mysql");
 const genre = require("../models/genre");
 
-const Movie = mongoose.model("Movie", new mongoose.Schema({
-    title: {
-        type: String,
-        required: true,
-        minlength: 3,
-        maxLength: 255,
-        trim: true
+
+const Movie = sequelize.define("movie", {
+    id: {
+        type: DataTypes.INTEGER(11),
+        primaryKey: true,
+        allowNull: false,
+        autoIncrement: true
     },
-    genre: {
-        type: genre.schema,
-        required: true
+    title: {
+        type: DataTypes.STRING(255),
+        allowNull: false
     },
     numberInStock: {
-        type: Number,
-        default: 0,
-        min: 0,
-        max: 255
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+        validate: {
+            min: 0,
+            max: 255
+        }
     },
     dailyRentalStock: {
-        type: Number,
-        default: 0,
-        min: 0,
-        max: 255
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+        validate: {
+            min: 0,
+            max: 255
+        }
     }
-}));
+});
+
+genre.Genre.hasMany(Movie);
 
 function validate(movie) {
     const validator = Joi.object({
         title: Joi.string().min(3).max(255).required(),
-        genreId: Joi.objectId().required(),
+        genreId: Joi.number().required(),
         numberInStock: Joi.number(),
         dailyRentalStock: Joi.number()
     });

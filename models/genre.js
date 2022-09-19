@@ -1,16 +1,22 @@
 const Joi = require("joi");
-const { default: mongoose } = require("mongoose");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../startup/db_mysql");
 
-const genreSchema = new mongoose.Schema({
+const genreSchema = {
+    id: {
+        type: DataTypes.INTEGER(11),
+        primaryKey: true,
+        allowNull: false,
+        autoIncrement: true
+    },
     name: {
-        type: String,
-        required: true,
-        minlength: 3,
-        maxLength: 50
-    }
-});
+        type: DataTypes.STRING(50),
+        allowNull: false
+    },
 
-const Genre = mongoose.model("Genre", genreSchema);
+};
+
+const Genre = sequelize.define("genre", genreSchema);
 
 function validate(genre) {
     const validator = Joi.object({
