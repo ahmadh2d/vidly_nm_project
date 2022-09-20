@@ -1,30 +1,29 @@
-const { default: mongoose } = require("mongoose");
 const request = require("supertest");
 const { Genre } = require("../../models/genre");
 const { User } = require("../../models/user");
+const sequelize = require("../../startup/db_mysql");
 let server;
 
 describe("/api/genres", () => {
+    beforeAll(async () => {
+        // await sequelize.sync({ force: true });
+    });
+
     beforeEach(() => {
         server = require("../../index");
-        // server.on('error', (e) => {
-        //     if (e.code === 'EADDRINUSE') {
-        //       console.log('Address in use, retrying...');
-        //       setTimeout(() => {
-        //         server.close();
-        //         server.listen(3000);
-        //       }, 1000);
-        //     }
-        //   });
     });
     afterEach(async () => {
-        await Genre.deleteMany({});
+        await Genre.truncate();
         server.close();
     });
 
+    afterAll(async () => {
+        await sequelize.close()
+    })
+
     describe("GET /", () => {
         it("should return all genres", async () => {
-            await Genre.collection.insertMany([
+            await Genre.bulkCreate([
                 { name: "genre1" },
                 { name: "genre2" },
             ]);
@@ -40,10 +39,9 @@ describe("/api/genres", () => {
 
     describe("GET /:id", () => {
         it("should return a genre by id", async () => {
-            const genre = new Genre({name: "genre1"});
-            await genre.save();
+            const genre = await Genre.create({name: "genre1"});
 
-            const res = await request(server).get(`/api/genres/${genre._id}`);
+            const res = await request(server).get(`/api/genres/${genre.id}`);
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty("name", genre.name);
         });
@@ -55,7 +53,7 @@ describe("/api/genres", () => {
         });
 
         it("should return a 404 error if genre is invalid", async () => {
-            const id = mongoose.Types.ObjectId();
+            const id = 1;
             const res = await request(server).get(`/api/genres/${id}`);
 
             expect(res.status).toBe(404);
@@ -74,8 +72,12 @@ describe("/api/genres", () => {
         let token;
         let name;
 
-        beforeEach(() => {
-            const user = new User();
+        beforeEach(async () => {
+            const user = new User({
+                name: "ahmad",
+                email: "ahmad@gmail.com",
+                password: "123456"
+            });
             token = user.generateAuthToken();
             name = "thriller";
         });
@@ -112,7 +114,7 @@ describe("/api/genres", () => {
             const res = await exec()
 
             expect(res.status).toBe(200);
-            expect(res.body).toHaveProperty("_id");
+            expect(res.body).toHaveProperty("id");
             expect(res.body).toHaveProperty("name", name);
         });
     });

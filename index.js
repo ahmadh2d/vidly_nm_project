@@ -1,12 +1,10 @@
 require("express-async-errors");
-const Joi = require("joi");
-Joi.objectId  = require("joi-objectid")(Joi);
 const express = require("express");
 const app = express();
 
 require("./startup/logging")();
 require("./startup/routes")(app);
-require("./startup/db.js")();
+// require("./startup/db.js")(); // MongoDB
 require("./startup/config.js")();
 
 

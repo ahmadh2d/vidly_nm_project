@@ -33,7 +33,9 @@ const Movie = sequelize.define("movie", {
     }
 });
 
-genre.Genre.hasMany(Movie);
+genre.Genre.hasMany(Movie, {
+    constraints: false
+});
 
 function validate(movie) {
     const validator = Joi.object({

@@ -1,6 +1,7 @@
 const { Sequelize } = require("sequelize");
+const config = require("config")
 
-const sequelize = new Sequelize("vidly_db_mysql", "root", "1234", {
+const sequelize = new Sequelize(config.get("db"), "root", "1234", {
     dialect: "mysql",
     host: "localhost",
 });
@@ -16,8 +17,8 @@ async function authenticate() {
             .catch((error) => console.error("Failed! Something went wrong during sync", error));
     } catch (error) {
         console.error("Unable to connect to the database: ", error);
-        await sequelize.close();
-        process.exit(1);
+        // await sequelize.close();
+        // process.exit(1);
     }
 }
 

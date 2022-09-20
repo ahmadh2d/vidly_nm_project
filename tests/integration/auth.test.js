@@ -1,20 +1,29 @@
 const request = require("supertest");
 const { Genre } = require("../../models/genre");
 const { User } = require("../../models/user");
+const sequelize = require("../../startup/db_mysql");
 let server;
 
 describe("auth middleware", () => {
     let token;
 
-    beforeEach(() => {
-          
+    // beforeAll(async () => {
+    //     await sequelize.sync({ force: true });
+    // });
+
+    beforeEach(async () => {
+        server = require("../../index");
         const user = new User();
         token = user.generateAuthToken();
     });
     
     afterEach(async () => {
-        await Genre.deleteMany({});
+        await Genre.truncate();
         server.close();
+    });
+
+    afterAll(async () => {
+        await sequelize.close()
     });
     
     
