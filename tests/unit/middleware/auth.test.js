@@ -2,14 +2,9 @@ const { User } = require("../../../models/user");
 const auth = require("../../../middleware/auth");
 
 describe("auth middleware", () => {
-    it("should populate req.user with payload of a valid JWT", async () => {
-        const user = {
-            name: "bilal",
-            email: "bilal@live.com",
-            isAdmin: true,
-            password: "123456",
-        };
-        const token = await User.create(user).generateAuthToken();
+    it("should populate req.user with payload of a valid JWT", () => {
+        const user = new User();
+        const token = user.generateAuthToken();
 
         const req = {
             header: jest.fn().mockReturnValue(token),

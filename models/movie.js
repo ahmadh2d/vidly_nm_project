@@ -1,6 +1,6 @@
 const Joi = require("joi");
 const { DataTypes } = require("sequelize");
-const sequelize = require("../startup/db_mysql");
+const sequelize = require("../startup/sequelize_mysql");
 const genre = require("../models/genre");
 
 

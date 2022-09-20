@@ -1,7 +1,7 @@
 const request = require("supertest");
 const { Genre } = require("../../models/genre");
 const { User } = require("../../models/user");
-const sequelize = require("../../startup/db_mysql");
+const sequelize = require("../../startup/sequelize_mysql");
 let server;
 
 describe("auth middleware", () => {

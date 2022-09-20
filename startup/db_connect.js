@@ -1,12 +1,6 @@
-const { Sequelize } = require("sequelize");
-const config = require("config")
+const sequelize = require("./sequelize_mysql");
 
-const sequelize = new Sequelize(config.get("db"), "root", "1234", {
-    dialect: "mysql",
-    host: "localhost",
-});
-
-async function authenticate() {
+module.exports = async function authenticate() {
     try {
         await sequelize.authenticate();
         console.log("Connection has been established successfully.");
@@ -21,7 +15,3 @@ async function authenticate() {
         // process.exit(1);
     }
 }
-
-authenticate();
-
-module.exports = sequelize;

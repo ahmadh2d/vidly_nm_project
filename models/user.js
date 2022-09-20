@@ -2,7 +2,7 @@ const Joi = require("joi");
 const config = require("config");
 const jwt = require("jsonwebtoken");
 const { DataTypes } = require("sequelize");
-const sequelize = require("../startup/db_mysql");
+const sequelize = require("../startup/sequelize_mysql");
 
 const userSchema = {
     id: {
